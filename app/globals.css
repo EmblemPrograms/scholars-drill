@@ -1,26 +1,112 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/*
+  Scholars Drill design tokens.
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  One strategy for the whole app: semantic CSS variables, swapped for dark
+  mode through prefers-color-scheme and exposed to Tailwind via @theme inline
+  (bg-canvas, text-ink, border-line, bg-brand, ...).
+
+  Brand blue is the single accent and matches Distinguished Scholars Academy.
+  Green and red appear only as answer state (correct / incorrect).
+
+  Shape rule: CTAs are full pills, containers are 16px (rounded-2xl),
+  answer options and inputs are 12px (rounded-xl).
+*/
+:root {
+  --canvas: #f6f7fa;
+  --surface: #fdfdfe;
+  --tint: #eef1fb;
+  --ink: #111318;
+  --muted: #535a6b;
+  --line: #e1e4ec;
+  --brand: #002eff;
+  --on-brand: #fdfdfe;
+  --brand-ink: #0027d6;
+  --good: #047857;
+  --good-soft: #e8f8f0;
+  --bad: #be123c;
+  --bad-soft: #fdeef1;
+  --card-shadow: 0 1px 2px rgb(17 19 24 / 0.04),
+    0 28px 56px -28px rgb(0 46 255 / 0.22);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --canvas: #0b0d12;
+    --surface: #12151c;
+    --tint: #141a2d;
+    --ink: #eceef3;
+    --muted: #9ba1b0;
+    --line: #242836;
+    --brand: #2a4dff;
+    --on-brand: #fdfdfe;
+    --brand-ink: #8fa6ff;
+    --good: #34d399;
+    --good-soft: #0c2a20;
+    --bad: #fb7185;
+    --bad-soft: #2d1017;
+    --card-shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 28px 56px -28px rgb(0 0 0 / 0.6);
   }
 }
 
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-surface: var(--surface);
+  --color-tint: var(--tint);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-brand: var(--brand);
+  --color-on-brand: var(--on-brand);
+  --color-brand-ink: var(--brand-ink);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --shadow-card: var(--card-shadow);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+}
+
+/*
+  Motion. CSS only, so the page ships no animation library to students on
+  limited data. `.rise` is the hero entrance (stagger with `[--i:N]`);
+  `.reveal` fades sections in as they scroll into view where the browser
+  supports scroll-driven animations, and is simply visible everywhere else.
+  Everything is skipped under prefers-reduced-motion.
+*/
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  .rise {
+    animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+    animation-delay: calc(var(--i, 0) * 90ms);
+  }
+
+  @supports (animation-timeline: view()) {
+    .reveal {
+      animation: rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
 }
