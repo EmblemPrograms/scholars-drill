@@ -33,9 +33,19 @@ Everything in the v1.1 PDF that is not contradicted below still stands. This doc
 | D5 | Scores, timers, and entitlements are **server-authoritative**. The client is never trusted with any of them |
 | D6 | The independent national candidate (no DSA relationship) signs up **free** — this is the growth model, and it is currently impossible (see B1) |
 
-### 0.3 Naming
+### 0.3 Naming — decided
 
-The PDF says **Scholars Drill**, the DSA docs say **Scholars Drill**, the repo is `scholars-drill`, and the DSA frontend ships routes under `quiz360pro`. Four names for one product. This document uses **Scholars Drill** throughout; the name needs one owner's decision before any user-facing copy is written. *(Open Item #11.)*
+**The product is Scholars Drill.** Two words, capital S, capital D. Quiz360Pro is retired: it is not an alias, not a working title, and not a legacy label to be kept alongside the new name.
+
+| Context | Form |
+|---|---|
+| Prose, UI copy, marketing | Scholars Drill |
+| Route segments, slugs, env keys | `scholars-drill` |
+| Component and symbol names | `ScholarsDrill` |
+| Repository | `scholars-drill` |
+| Role namespace key | `roles.scholarsdrill` |
+
+Applied to the DSA frontend on 11 September 2026 — routes `/quiz360pro` → `/scholars-drill` and `/dashboard/quiz360` → `/dashboard/scholars-drill`, with permanent (308) redirects from both old paths so existing links, bookmarks and indexed results keep working. Component names, section anchors, the nav entry and source comments moved with them. No occurrence of Quiz360Pro remains in either codebase. *(Closes Open Item #11.)*
 
 ---
 
@@ -45,9 +55,9 @@ The PDF says **Scholars Drill**, the DSA docs say **Scholars Drill**, the repo i
 
 ```
 ┌────────────────────┐         ┌────────────────────┐
-│  DSA frontend      │         │  Scholars Drill      │
+│  DSA frontend      │         │  Scholars Drill    │
 │  Next.js           │         │  Next.js 16        │
-│  dsa.com           │         │  scholarsdrill.com  │
+│  dsa.com           │         │  scholarsdrill.com │
 └─────────┬──────────┘         └─────────┬──────────┘
           │                              │
           │   HTTPS + Bearer JWT         │
@@ -451,9 +461,9 @@ The PDF's 47 sections are the full product. They are not one release. The split 
 | 5 | **CBT anti-cheating.** No handling for tab-switching, multi-device concurrent login, or screen recording during timed exams. Note this trades against §12's offline tolerance — decide the balance deliberately |
 | 9 | **NDPR compliance.** The platform collects phone, email, exam year and performance history on minors. Consent capture, retention period and deletion rights are unaddressed. `status: 'deleted'` is a soft delete — it does not satisfy a deletion request |
 | 10 | **Environments & QA.** No staging/production separation. The API's CORS list points at one Vercel preview and production. New questions have no pre-publish test gate |
-| 11 | **Product name.** Scholars Drill / Scholars Drill / Quiz360Pro / scholars-drill — four names, no decision |
-| 12 | **Quiz360Pro overlap.** The DSA frontend already ships `/quiz360pro`, `/rapid-quiz`, `/dashboard/quiz360`, `/dashboard/simulator`, `/dashboard/community`, `/dashboard/rankings`. Either extract them into Scholars Drill or keep them in DSA — but leaving both is how two divergent CBT implementations happen |
+| 12 | **Route overlap with DSA.** The naming is settled (0.3) but the ownership is not. The DSA frontend still ships `/scholars-drill`, `/rapid-quiz`, `/dashboard/scholars-drill`, `/dashboard/simulator`, `/dashboard/community`, `/dashboard/rankings`. Either extract them into this app or keep them in DSA — but leaving both is how two divergent CBT implementations happen. Renaming them did not resolve this; it only stopped the name from hiding it |
 | 13 | **Backend ownership.** Scholars Drill needs roughly a dozen new collections and several endpoint extensions in a repository owned by the DSA team. Who writes them, against what schedule, and how are breaking changes to shared endpoints coordinated? |
+| 14 | **`/rapid-quiz` and the `RapidQuiz` component** were left untouched by the rename because they are a distinct name, not a Quiz360Pro variant. Decide whether they fold into Scholars Drill or stay separate |
 
 ---
 
