@@ -1,7 +1,7 @@
-# ScholarDrill — Product Requirements Document
+# Scholars Drill — Product Requirements Document
 
 **Version:** 1.2 — Integration-Grounded Draft
-**Date:** 10 September 2026
+**Date:** 11 September 2026
 **Supersedes:** `ScholarDrill_PRD_v1.1_Dev_Ready.pdf` (product spec) and `distingushed-scholars-academy/docs/Scholars-Drill-PRD.md` (identity spec)
 **Repository:** `wamp64/www/scholars-drill` — Next.js 16.3.4, React 19.2.8, Tailwind 4, TypeScript
 **Backend:** the existing DSA API — `https://api.distinguishedscholarsacademy.com`, Swagger at `/api-docs`
@@ -12,12 +12,12 @@
 
 ### 0.1 What this version adds
 
-v1.1 was written as a product spec and closed with ten Open Items, several of which said "not yet defined." Those items are no longer open in the abstract — the backend that ScholarDrill will run on **already exists and was read for this document**: `wamp64/www/dsa_backend`, an Express + Mongoose service, plus its live frontend consumer `wamp64/www/distingushed-scholars-academy`.
+v1.1 was written as a product spec and closed with ten Open Items, several of which said "not yet defined." Those items are no longer open in the abstract — the backend that Scholars Drill will run on **already exists and was read for this document**: `wamp64/www/dsa_backend`, an Express + Mongoose service, plus its live frontend consumer `wamp64/www/distingushed-scholars-academy`.
 
 So this version does three things v1.1 could not:
 
 1. Answers the Open Items that the backend already answers, with file references.
-2. Names precisely which endpoints ScholarDrill **reuses as-is**, which need **extension**, and which must be **built from nothing**.
+2. Names precisely which endpoints Scholars Drill **reuses as-is**, which need **extension**, and which must be **built from nothing**.
 3. Isolates the small number of hard blockers that stop v1 from being buildable at all.
 
 Everything in the v1.1 PDF that is not contradicted below still stands. This document does not restate the feature narrative — it makes it executable.
@@ -26,16 +26,16 @@ Everything in the v1.1 PDF that is not contradicted below still stands. This doc
 
 | # | Decision |
 |---|---|
-| D1 | ScholarDrill is a **separate Next.js application** with its own codebase and its own domain |
+| D1 | Scholars Drill is a **separate Next.js application** with its own codebase and its own domain |
 | D2 | It consumes the **same REST API** as DSA — `https://api.distinguishedscholarsacademy.com/api` — and the same MongoDB Atlas database behind it |
-| D3 | ScholarDrill **never implements its own auth**: no password hashing, no token signing, no session store. It calls `/api/auth/*` and holds the returned JWT |
-| D4 | A DSA student signs in to ScholarDrill with their existing DSA credentials. No second signup, no forced password reset |
+| D3 | Scholars Drill **never implements its own auth**: no password hashing, no token signing, no session store. It calls `/api/auth/*` and holds the returned JWT |
+| D4 | A DSA student signs in to Scholars Drill with their existing DSA credentials. No second signup, no forced password reset |
 | D5 | Scores, timers, and entitlements are **server-authoritative**. The client is never trusted with any of them |
 | D6 | The independent national candidate (no DSA relationship) signs up **free** — this is the growth model, and it is currently impossible (see B1) |
 
 ### 0.3 Naming
 
-The PDF says **ScholarDrill**, the DSA docs say **Scholars Drill**, the repo is `scholars-drill`, and the DSA frontend ships routes under `quiz360pro`. Four names for one product. This document uses **ScholarDrill** throughout; the name needs one owner's decision before any user-facing copy is written. *(Open Item #11.)*
+The PDF says **Scholars Drill**, the DSA docs say **Scholars Drill**, the repo is `scholars-drill`, and the DSA frontend ships routes under `quiz360pro`. Four names for one product. This document uses **Scholars Drill** throughout; the name needs one owner's decision before any user-facing copy is written. *(Open Item #11.)*
 
 ---
 
@@ -45,9 +45,9 @@ The PDF says **ScholarDrill**, the DSA docs say **Scholars Drill**, the repo is 
 
 ```
 ┌────────────────────┐         ┌────────────────────┐
-│  DSA frontend      │         │  ScholarDrill      │
+│  DSA frontend      │         │  Scholars Drill      │
 │  Next.js           │         │  Next.js 16        │
-│  dsa.com           │         │  scholardrill.com  │
+│  dsa.com           │         │  scholarsdrill.com  │
 └─────────┬──────────┘         └─────────┬──────────┘
           │                              │
           │   HTTPS + Bearer JWT         │
@@ -71,7 +71,7 @@ The PDF says **ScholarDrill**, the DSA docs say **Scholars Drill**, the repo is 
 NEXT_PUBLIC_API_URL=https://api.distinguishedscholarsacademy.com
 ```
 
-Origin only — **no trailing `/api`**. DSA's own codebase carries a warning about this: its admin clients append `/api` per path and a base ending in `/api` produces `/api/api/...` and a 404 on admin login. ScholarDrill adopts a single API client that normalises the base once, so the mistake cannot be repeated per-file.
+Origin only — **no trailing `/api`**. DSA's own codebase carries a warning about this: its admin clients append `/api` per path and a base ending in `/api` produces `/api/api/...` and a 404 on admin login. Scholars Drill adopts a single API client that normalises the base once, so the mistake cannot be repeated per-file.
 
 ### 1.2 Auth flow
 
@@ -79,7 +79,7 @@ Origin only — **no trailing `/api`**. DSA's own codebase carries a warning abo
 |---|---|---|
 | Sign in | `POST /api/auth/login` | Email + password → JWT |
 | Session | `Authorization: Bearer <jwt>` | On every authenticated request |
-| Identity | `GET /api/auth/me` | Populates the ScholarDrill session |
+| Identity | `GET /api/auth/me` | Populates the Scholars Drill session |
 | Sign up | `POST /api/auth/register` | **Blocked — see B1** |
 | Verify | `POST /api/auth/verify-otp` | 4-digit OTP by email → `status: active` |
 | Resend | `POST /api/auth/send-otp` \| `/resend-otp` | |
@@ -90,15 +90,15 @@ Origin only — **no trailing `/api`**. DSA's own codebase carries a warning abo
 
 There is **no Google OAuth** and no social login. Password only.
 
-**"Same login" means shared credentials, not silent SSO.** Separate domains cannot share cookies. A student signed in on DSA who opens ScholarDrill signs in again with the same email and password. Cross-domain token handoff is a Phase 2 decision, not v1.
+**"Same login" means shared credentials, not silent SSO.** Separate domains cannot share cookies. A student signed in on DSA who opens Scholars Drill signs in again with the same email and password. Cross-domain token handoff is a Phase 2 decision, not v1.
 
-**Token storage.** The JWT must not be readable by page scripts. Store it in an `httpOnly`, `Secure`, `SameSite=Lax` cookie set by a ScholarDrill route handler that proxies `/api/auth/login`; the browser never holds the raw token. This is a deliberate departure from DSA's current client-side pattern.
+**Token storage.** The JWT must not be readable by page scripts. Store it in an `httpOnly`, `Secure`, `SameSite=Lax` cookie set by a Scholars Drill route handler that proxies `/api/auth/login`; the browser never holds the raw token. This is a deliberate departure from DSA's current client-side pattern.
 
 ### 1.3 What the account record actually looks like
 
 From `dsa_backend/models/User.js`:
 
-| Field | Values | Relevance to ScholarDrill |
+| Field | Values | Relevance to Scholars Drill |
 |---|---|---|
 | `email` | unique, lowercased, trimmed | The cross-product identity key |
 | `role` | `student` \| `admin` \| `moderator` \| `guardian` \| `tutor` \| `parent` \| `staff` | **Single string — see B2** |
@@ -108,10 +108,10 @@ From `dsa_backend/models/User.js`:
 | `accessEnabled` | boolean | Admin kill-switch per user |
 | `studentId` | `DSA/2026-XXXXXX` | Unique, sparse. Issued **only** on DSA registration |
 | `programmes` | `["JAMB","WAEC"]` | Required for students |
-| `examTrack`, `department`, `currentLevel`, `learningMode` | | Prefill ScholarDrill onboarding from these |
+| `examTrack`, `department`, `currentLevel`, `learningMode` | | Prefill Scholars Drill onboarding from these |
 | `staffRoleId` → `StaffRole.permissions[]` | | A real permission system, already built |
 
-`studentId` is a **DSA enrolment attribute**, not a universal user id. A free ScholarDrill signup must not receive one — guardian linking (`linkedStudentId`) and class rosters key on it. Note also that `isDsaStudent` in the DSA frontend means *physical vs online study mode*; it does not mean "came from DSA." Do not reuse it for product origin.
+`studentId` is a **DSA enrolment attribute**, not a universal user id. A free Scholars Drill signup must not receive one — guardian linking (`linkedStudentId`) and class rosters key on it. Note also that `isDsaStudent` in the DSA frontend means *physical vs online study mode*; it does not mean "came from DSA." Do not reuse it for product origin.
 
 ---
 
@@ -160,7 +160,7 @@ POST   /:id/attempts/:attemptId/submit        submit
 GET    /:id/attempts/:attemptId/corrections   review
 ```
 
-**The gap is assembly, not execution.** Every one of those calls needs an `:id` — an existing `Quiz` document authored in advance by an admin, reached by `accessLink` + `accessCode`. ScholarDrill's Quick Drill, Topic Practice and Mixed Practice (§9.1–9.3) assemble a session **on demand from filters**, for one student, at the moment they tap "Continue Practising."
+**The gap is assembly, not execution.** Every one of those calls needs an `:id` — an existing `Quiz` document authored in advance by an admin, reached by `accessLink` + `accessCode`. Scholars Drill's Quick Drill, Topic Practice and Mixed Practice (§9.1–9.3) assemble a session **on demand from filters**, for one student, at the moment they tap "Continue Practising."
 
 Two ways out, and the backend team picks one:
 
@@ -180,8 +180,8 @@ Full CBT Simulation (§9.5) is admin-configured with fixed subjects, duration an
 | E3 | `GET /api/analytics/me` | Per-subject and per-topic breakdown, accuracy trend over time (§17, §18) |
 | E4 | `GET /api/admin/stats` | DAU, WAU, retention, challenge participation (§30, §39) |
 | E5 | `GET /api/notifications` | Trigger types for drill/streak/challenge/achievement (§27) |
-| E6 | `GET /api/plans` | ScholarDrill plan kinds alongside `portal`/`tutorial` (B5) |
-| E7 | CORS allowlist in `dsa_backend/app.js` | **ScholarDrill's origins are not in it (B6)** |
+| E6 | `GET /api/plans` | Scholars Drill plan kinds alongside `portal`/`tutorial` (B5) |
+| E7 | CORS allowlist in `dsa_backend/app.js` | **Scholars Drill's origins are not in it (B6)** |
 
 ### 2.4 Build from nothing
 
@@ -222,31 +222,31 @@ status: 'pending_payment'
 
 Registration requires a price, initialises Paystack, and parks the user at `pending_payment`. **No payment, no account.** `accessLevel` defaults to `'free'` but registration never lands a user there — the only routes to an active account today are a successful Paystack webhook, an offline payment with proof, or admin creation via `POST /api/admin/students`.
 
-D6 — the entire national growth model — is free signup. So ScholarDrill cannot use `POST /api/auth/register` as it stands.
+D6 — the entire national growth model — is free signup. So Scholars Drill cannot use `POST /api/auth/register` as it stands.
 
-**Required:** a registration path producing `register → pending_otp → verify-otp → active` with `accessLevel: 'free'` and **no payment step**. Whether that is a new endpoint, a `product: 'scholardrill'` parameter, or a `price: 0` branch is the backend team's call. Two constraints are not negotiable:
+**Required:** a registration path producing `register → pending_otp → verify-otp → active` with `accessLevel: 'free'` and **no payment step**. Whether that is a new endpoint, a `product: 'scholars-drill'` parameter, or a `price: 0` branch is the backend team's call. Two constraints are not negotiable:
 
 - The resulting account is a first-class `User`, not a lesser record.
-- It carries **no `studentId` and no DSA enrolment**. Free ScholarDrill signup must never become a back door into DSA's paid portal.
+- It carries **no `studentId` and no DSA enrolment**. Free Scholars Drill signup must never become a back door into DSA's paid portal.
 
 *Severity: blocks all of P2 acquisition. Owner: backend.*
 
-### B2 — One `role` string means a DSA admin is a ScholarDrill admin on day one
+### B2 — One `role` string means a DSA admin is a Scholars Drill admin on day one
 
-Every account carries a single `role`. `middleware/auth.js` → `authorize(...roles)` compares that one string. If ScholarDrill checks `role === 'admin'`, every DSA administrator — and anyone reaching DSA's admin bypass — becomes a national platform administrator with question-publishing rights the moment ScholarDrill launches.
+Every account carries a single `role`. `middleware/auth.js` → `authorize(...roles)` compares that one string. If Scholars Drill checks `role === 'admin'`, every DSA administrator — and anyone reaching DSA's admin bypass — becomes a national platform administrator with question-publishing rights the moment Scholars Drill launches.
 
-Compounding it: DSA's live `.env.local` carries `NEXT_PUBLIC_ENABLE_ADMIN_BYPASS=true`, and its `admin_token` cookie is the literal string `true`, not a JWT. That is a DSA problem today. Once two products share one `users` collection it is ScholarDrill's problem too.
+Compounding it: DSA's live `.env.local` carries `NEXT_PUBLIC_ENABLE_ADMIN_BYPASS=true`, and its `admin_token` cookie is the literal string `true`, not a JWT. That is a DSA problem today. Once two products share one `users` collection it is Scholars Drill's problem too.
 
 **Required, before launch:**
 
 ```js
 roles: {
   dsa:          'student'|'tutor'|'parent'|'staff'|'admin'|'super_admin'|null,
-  scholardrill: 'student'|'content_manager'|'admin'|null
+  scholarsdrill: 'student'|'content_manager'|'admin'|null
 }
 ```
 
-- ScholarDrill authorises **only** on `roles.scholardrill` and never reads the legacy top-level `role`.
+- Scholars Drill authorises **only** on `roles.scholarsdrill` and never reads the legacy top-level `role`.
 - `role` stays populated as a compatibility field for the un-migrated DSA frontend.
 - Cross-product rights are granted explicitly, never inherited.
 - The admin bypass is disabled and the code removed.
@@ -269,7 +269,7 @@ PDF §7 requires per question: subject, **topic, subtopic, examination, examinat
 
 **Consequence:** §9.4 Past Questions — "JAMB → English → 2024" — is **not implementable** on today's schema. Neither is difficulty-based selection (§10), difficulty analytics (§40), or the topic-level weak-area detection (§6, §19) that the entire recommendation engine depends on.
 
-This is the largest single gap in the whole project, and it is upstream of most of the product. It also forces a decision the backend has so far avoided: **`BankQuestion` and `Question` are two competing question models.** ScholarDrill should target exactly one — v2 `Question`, extended — and the flat `BankQuestion` should be migrated or explicitly frozen as legacy tutor import only.
+This is the largest single gap in the whole project, and it is upstream of most of the product. It also forces a decision the backend has so far avoided: **`BankQuestion` and `Question` are two competing question models.** Scholars Drill should target exactly one — v2 `Question`, extended — and the flat `BankQuestion` should be migrated or explicitly frozen as legacy tutor import only.
 
 Subject and topic are currently free-text strings with no controlled vocabulary. "Maths", "Mathematics" and "mathematics" are three subjects. A taxonomy has to land with this work or the filters will be unusable at scale.
 
@@ -292,13 +292,13 @@ Two design constraints worth fixing now, because retrofitting them is painful:
 
 The PDF states one-time pricing: **Gold ₦2,000, Platinum ₦4,000**. The backend's `PaymentPlan` has `kind: 'portal' | 'tutorial'`, `grantsLevel: 'portal' | 'tutorial'`, `durationMonths`, and a `track` scoping plans to a programme. `User.accessLevel` is `free | portal | tutorial`.
 
-There is no Gold, no Platinum, and the model is duration-based where the PDF is one-time. `durationMonths: 0` can express "one-time," so the mechanism fits — but the tier names, what each grants, and whether ScholarDrill tiers are separate from DSA's portal/tutorial levels all need a product decision before the paywall is coded.
+There is no Gold, no Platinum, and the model is duration-based where the PDF is one-time. `durationMonths: 0` can express "one-time," so the mechanism fits — but the tier names, what each grants, and whether Scholars Drill tiers are separate from DSA's portal/tutorial levels all need a product decision before the paywall is coded.
 
 **The important part is architectural, and the PDF gets it right (§43):** access rules live in **one entitlements layer**, not scattered through the app. `AccessSettings` (`freeTests`, `freeMaterials`, `freeLiveClasses`, and the `portal*` equivalents) is already that layer. Extend it — do not build a second one.
 
 *Severity: blocks the paywall. Owner: product.*
 
-### B6 — ScholarDrill's origin is not in the CORS allowlist
+### B6 — Scholars Drill's origin is not in the CORS allowlist
 
 `dsa_backend/app.js`:
 
@@ -312,7 +312,7 @@ app.use(cors({
 }));
 ```
 
-Every browser call from ScholarDrill fails until its production domain, its preview domains, and its local dev port are added. DSA already occupies `localhost:3000`, so ScholarDrill dev needs its own port (`3001`) added explicitly.
+Every browser call from Scholars Drill fails until its production domain, its preview domains, and its local dev port are added. DSA already occupies `localhost:3000`, so Scholars Drill dev needs its own port (`3001`) added explicitly.
 
 Small, cheap, and a guaranteed day-one halt if it is not done first.
 
@@ -370,11 +370,11 @@ The PDF's 47 sections are the full product. They are not one release. The split 
 | ID | Requirement | Priority |
 |---|---|---|
 | R-1 | One `users` record per person, shared by both products | Must |
-| R-2 | ScholarDrill consumes `/api/auth/*` and never writes credentials, hashes or tokens | Must |
+| R-2 | Scholars Drill consumes `/api/auth/*` and never writes credentials, hashes or tokens | Must |
 | R-3 | Existing DSA credentials authenticate unchanged — no forced reset (D4) | Must |
 | R-4 | A free registration path creating an `active` account with no payment | **Blocker (B1)** |
 | R-5 | Free registration issues no `studentId` and no DSA enrolment | Must |
-| R-6 | Product-namespaced roles; ScholarDrill reads only `roles.scholardrill` | **Blocker (B2)** |
+| R-6 | Product-namespaced roles; Scholars Drill reads only `roles.scholarsdrill` | **Blocker (B2)** |
 | R-7 | `NEXT_PUBLIC_ENABLE_ADMIN_BYPASS` disabled and the bypass code removed before launch | **Blocker (B2)** |
 | R-8 | The JWT is held in an `httpOnly` `Secure` `SameSite=Lax` cookie, never in `localStorage` | Must |
 | R-9 | A signup with an existing email is handled as a sign-in prompt, never a duplicate or a bare error | Must |
@@ -415,7 +415,7 @@ The PDF's 47 sections are the full product. They are not one release. The split 
 
 | ID | Requirement | Priority |
 |---|---|---|
-| R-32 | ScholarDrill's origins are in the API CORS allowlist | **Blocker (B6)** |
+| R-32 | Scholars Drill's origins are in the API CORS allowlist | **Blocker (B6)** |
 | R-33 | Every privileged action is re-validated server-side against role and permissions (§47) | Must |
 | R-34 | Privileged actions are written to `AuditLog` — who, what, when | Must |
 | R-35 | All list endpoints paginate; question lists are indexed on the filter fields | Must |
@@ -451,9 +451,9 @@ The PDF's 47 sections are the full product. They are not one release. The split 
 | 5 | **CBT anti-cheating.** No handling for tab-switching, multi-device concurrent login, or screen recording during timed exams. Note this trades against §12's offline tolerance — decide the balance deliberately |
 | 9 | **NDPR compliance.** The platform collects phone, email, exam year and performance history on minors. Consent capture, retention period and deletion rights are unaddressed. `status: 'deleted'` is a soft delete — it does not satisfy a deletion request |
 | 10 | **Environments & QA.** No staging/production separation. The API's CORS list points at one Vercel preview and production. New questions have no pre-publish test gate |
-| 11 | **Product name.** ScholarDrill / Scholars Drill / Quiz360Pro / scholars-drill — four names, no decision |
-| 12 | **Quiz360Pro overlap.** The DSA frontend already ships `/quiz360pro`, `/rapid-quiz`, `/dashboard/quiz360`, `/dashboard/simulator`, `/dashboard/community`, `/dashboard/rankings`. Either extract them into ScholarDrill or keep them in DSA — but leaving both is how two divergent CBT implementations happen |
-| 13 | **Backend ownership.** ScholarDrill needs roughly a dozen new collections and several endpoint extensions in a repository owned by the DSA team. Who writes them, against what schedule, and how are breaking changes to shared endpoints coordinated? |
+| 11 | **Product name.** Scholars Drill / Scholars Drill / Quiz360Pro / scholars-drill — four names, no decision |
+| 12 | **Quiz360Pro overlap.** The DSA frontend already ships `/quiz360pro`, `/rapid-quiz`, `/dashboard/quiz360`, `/dashboard/simulator`, `/dashboard/community`, `/dashboard/rankings`. Either extract them into Scholars Drill or keep them in DSA — but leaving both is how two divergent CBT implementations happen |
+| 13 | **Backend ownership.** Scholars Drill needs roughly a dozen new collections and several endpoint extensions in a repository owned by the DSA team. Who writes them, against what schedule, and how are breaking changes to shared endpoints coordinated? |
 
 ---
 
@@ -466,7 +466,7 @@ The PDF's 47 sections are the full product. They are not one release. The split 
 | Wrong answers in the bank | The one failure a practice app cannot survive; it is the stated reason students distrust the incumbents | Five-state workflow, reviewer recorded, report control on every question, only `Published` served |
 | AI explains a wrong answer confidently | Amplifies the above | Ground explanations in the stored verified answer; the model is never the source of truth; degrade to the stored explanation on failure |
 | Two apps writing one `users` document | Silent field clobbering | Field-level atomic updates only; one owning service per field |
-| DSA admin bypass reaches ScholarDrill | National platform admin for anyone who finds it | B2, before launch, not after |
+| DSA admin bypass reaches Scholars Drill | National platform admin for anyone who finds it | B2, before launch, not after |
 | Gamification absorbs the v1 schedule | CBT ships late and thin | The §4 split; XP is v2 |
 
 ---
@@ -476,9 +476,9 @@ The PDF's 47 sections are the full product. They are not one release. The split 
 1. **Decisions needed from product** — B5 tier definition, Open Items #11 (name), #12 (Quiz360Pro overlap), #13 (backend ownership), and the §22 streak definition.
 2. **Decisions needed from backend** — B1 registration shape, B2 role namespacing, B3 question schema and which model wins, and 2.2 (a) vs (b) for practice sessions.
 3. **Fix immediately** — B6, the CORS allowlist. It costs one line and unblocks all local work.
-4. **Then** — data model and API contract for §2.4, reviewed against this document before any ScholarDrill UI is written.
+4. **Then** — data model and API contract for §2.4, reviewed against this document before any Scholars Drill UI is written.
 
-Nothing in the ScholarDrill client should be built against an endpoint that does not yet exist. Where a v1 feature depends on one, the contract is agreed first and mocked behind the shared API client.
+Nothing in the Scholars Drill client should be built against an endpoint that does not yet exist. Where a v1 feature depends on one, the contract is agreed first and mocked behind the shared API client.
 
 ---
 
