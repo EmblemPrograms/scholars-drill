@@ -32,6 +32,7 @@ Everything in the v1.1 PDF that is not contradicted below still stands. This doc
 | D4 | A DSA student signs in to Scholars Drill with their existing DSA credentials. No second signup, no forced password reset |
 | D5 | Scores, timers, and entitlements are **server-authoritative**. The client is never trusted with any of them |
 | D6 | The independent national candidate (no DSA relationship) signs up **free** — this is the growth model, and it is currently impossible (see B1) |
+| D7 | Scholars Drill gets its **own question bank**, created through the **same API endpoints** DSA already exposes (`/api/question-banks`, `/api/questions`). No second backend, no forked question service *(decided 12 September 2026, see [APP-STRUCTURE.md](APP-STRUCTURE.md) §0)* |
 
 ### 0.3 Naming — decided
 
@@ -282,6 +283,10 @@ PDF §7 requires per question: subject, **topic, subtopic, examination, examinat
 This is the largest single gap in the whole project, and it is upstream of most of the product. It also forces a decision the backend has so far avoided: **`BankQuestion` and `Question` are two competing question models.** Scholars Drill should target exactly one — v2 `Question`, extended — and the flat `BankQuestion` should be migrated or explicitly frozen as legacy tutor import only.
 
 Subject and topic are currently free-text strings with no controlled vocabulary. "Maths", "Mathematics" and "mathematics" are three subjects. A taxonomy has to land with this work or the filters will be unusable at scale.
+
+**Resolved in the backend, 12 September 2026.** `Question` now carries `examination` (JAMB / WAEC / NECO / POST_UTME / OTHER), `examinationYear` (1978 to next year), `topic`, `subtopic`, `difficulty` (EASY / MEDIUM / HARD) and `source`, with indexes for past-question, topic and difficulty queries, and filters on `GET /api/questions`. `QuestionBank.product` decides whether they are required: `scholars-drill` banks demand exam, year, topic and difficulty on every question and reject imports without them, while `dsa` banks keep the old optional behaviour. The remaining piece of B3 is the **subject and topic taxonomy** (R-17), which is still free text, and the two competing question models (R-14).
+
+**Update, 12 September 2026 (D7).** The bank is a new Scholars Drill-owned `QuestionBank` created through the existing endpoints, not a fork of DSA's content and not a second service. That settles *ownership*, not *shape*: the fields above are still missing from `Question`, so Past Questions, difficulty selection and topic-level weak areas remain blocked until they are added. They can be added as optional fields on the same endpoints, which does not break DSA.
 
 *Severity: blocks §9.4, §10, §19, §40 and the recommendation engine. Owner: backend.*
 
