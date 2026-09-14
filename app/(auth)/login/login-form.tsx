@@ -1,12 +1,9 @@
 "use client";
 
 import { useActionState } from "react";
-import { WarningCircle } from "@phosphor-icons/react";
 import { login, type LoginState } from "./actions";
+import { field, FormError } from "../_components/form";
 import { button } from "@/app/_components/ui";
-
-const field =
-  "w-full rounded-xl border border-line bg-canvas px-3.5 py-3 text-ink transition-colors placeholder:text-muted/70 focus-visible:border-brand focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand";
 
 export function LoginForm({ next }: { next?: string }) {
   const [state, formAction, pending] = useActionState<LoginState, FormData>(login, {});
@@ -17,14 +14,7 @@ export function LoginForm({ next }: { next?: string }) {
     <form action={formAction} className="grid gap-5">
       {next ? <input type="hidden" name="next" value={next} /> : null}
 
-      <div aria-live="polite">
-        {state.error ? (
-          <p className="flex items-start gap-2 rounded-xl bg-bad-soft px-3.5 py-3 text-sm font-medium text-bad">
-            <WarningCircle size={18} weight="fill" aria-hidden className="mt-0.5 shrink-0" />
-            {state.error}
-          </p>
-        ) : null}
-      </div>
+      <FormError message={state.error} />
 
       <div className="grid gap-2">
         <label htmlFor="email" className="text-sm font-semibold">
